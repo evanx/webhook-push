@@ -1,5 +1,7 @@
 # webhook-push
 
+Push the JSON contents of a webhook into a Redis queue named according to the HTTP location
+
 Simple webhook server, intended for incoming updates from Telegram, pushed into Redis queue.
 
 For example, invoke `https://api.telegram.org/botTOKEN/setWebhook` with the URL for this NodeJS webserver and location `/webhook/SECRET.`
