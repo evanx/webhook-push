@@ -20,8 +20,14 @@ dd if=/dev/random bs=32 count=1 2>/dev/null | sha1sum | cut -f1 -d' '
 ```
 
 Your bot handler should then `rpoplpush` from `telebotpush:${WEBHOOK_SECRET}:in` in order to receive these updates via Telegram.org.
+```
+redis-cli rpop telebotpush:$WEBHOOK_SECRET:in | jq '.message .from .username'
+```
 
 You must whitelist your `WEBHOOK_SECRET` in `telebotpush:allowed:ids`
+```
+redis-cli sadd telebotpush:allowed:ids $WEBHOOK_SECRET
+```
 
 Note that your bot would reply to chat commands directly using https://api.telegram.org/botTOKEN/sendMessage`
 
