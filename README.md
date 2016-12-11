@@ -1,15 +1,28 @@
 # webhook-push
 
-Push the JSON contents of a webhook into a Redis queue named according to the HTTP location
+Push the JSON contents of a webhook into a Redis queue named according to the URL path.
 
-Simple webhook server, intended for incoming updates from Telegram, pushed into Redis queue.
+It is intended for incoming updates from Telegram.org bots.
 
-For example, invoke `https://api.telegram.org/botTOKEN/setWebhook` with the URL for this NodeJS webserver and location `/webhook/SECRET.`
+This is useful for development insomuch as you can use ssh port forwarding to the remote Redis instance, to effectively receive webhook notifications from live Telegram.org bots onto your development machine.
+```shell
+ssh webhook-push-redis -L6333:127.0.0.1:6379
+```
 
-However, you must add your webhook SECRET to the set `evanx:webhook-publish:allowed:webhooks:set` to enable it.
+Invoke `https://api.telegram.org/botTOKEN/setWebhook` with your deployment URL.
 
-Your bot should then pop from `evanx:webhook-publish:SECRET:queue` in order to receive these bot updates.
+It also simplifies production of multiple Telegram bots, which each are "hooked up" via a Redis connection, i.e. requiring minimal configuration. The HTTPS server requires Certbot and Nginx, but is a single generic deployment, that can service webhooks for multiple bots.
+
+The path of URL would `/webhook/${WEBHOOK_SECRET}` where you might generate a random `WEBHOOK_SECRET` as follows.
+
+```shell
+dd if=/dev/random bs=32 count=1 2>/dev/null | sha1sum | cut -f1 -d' '
+```
+
+Your bot handler should then `rpoplpush` from `telebotpush:${WEBHOOK_SECRET}:in` in order to receive these updates via Telegram.org.
+
+You must whitelist your `WEBHOOK_SECRET` in `telebotpush:allowed:ids`
 
 Note that your bot would reply to chat commands directly using https://api.telegram.org/botTOKEN/sendMessage`
 
-
+where the `TOKEN` for your bot is provided by @BotFather when you use the commands `/newbot` or `/token`

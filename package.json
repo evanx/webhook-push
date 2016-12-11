@@ -4,9 +4,11 @@
   "description": "Telegram bot hub",
   "main": "index.js",
   "scripts": {
-    "test": " /opt/node7/bin/node build/test.js",
-    "development": "node_modules/.bin/babel src/index.js --out-file index.js; /opt/node-latest/bin/node build/index.js",
-    "production": "pm2 --interpreter /opt/node7/bin/node start build/index.js --name `basename $PWD`"
+    "test": "node_modules/.bin/babel src/index.js --out-file build/index.js; NODE_ENV=test /opt/node7/bin/node build/index.js",
+    "curl-local": "curl -s http://localhost:8801/echo/test | jq '.'",
+    "curl-telebot": "curl -s https://telebot.webserva.com/echo/test | jq '.'",
+    "development": "node_modules/.bin/babel src/index.js --out-file build/index.js; NODE_ENV=development /opt/node7/bin/node build/index.js",
+    "production": "NODE_ENV=production pm2 --interpreter /opt/node7/bin/node start build/index.js --name `basename $PWD`"
   },
   "author": "",
   "license": "ISC",
