@@ -35,7 +35,7 @@ You must whitelist your `WEBHOOK_SECRET` in `telebotpush:allowed:ids`
 redis-cli sadd telebotpush:allowed:ids $WEBHOOK_SECRET
 ```
 
-Note that your bot would reply to chat commands directly using https://api.telegram.org/botTOKEN/sendMessage`
+Note that your bot would reply to chat commands directly using `api.telegram.org/botTOKEN/sendMessage`
 
 where the `TOKEN` for your bot is provided by @BotFather when you use the commands `/newbot` or `/token`
 
