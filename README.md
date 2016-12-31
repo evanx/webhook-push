@@ -68,5 +68,5 @@ async function sendTelegram(chatId, format, ...content) {
 
 ### Related 
 
-https://github.com/evanx/webhook-publish - webhooks to Redis pubsub 
+https://github.com/evanx/webhook-publish - webhooks published to a Redis pubsub channel, and so whitelist not required, but on the downside tmessages are not persistent in that case e.g. missed if no subscribers running at that instance in time
 
