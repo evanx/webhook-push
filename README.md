@@ -19,6 +19,12 @@ The path of URL would `/webhook/${WEBHOOK_SECRET}` where you might generate a ra
 dd if=/dev/random bs=32 count=1 2>/dev/null | sha1sum | cut -f1 -d' '
 ```
 
+Alternatively see my http://github.com/evanx/secret-base56
+```
+docker build -t secret-base56 https://github.com/evanx/secret-base56.git
+docker run -e length=40 secret-base56
+```
+
 Your bot handler should then `rpoplpush` from `telebotpush:${WEBHOOK_SECRET}:in` in order to receive these updates via Telegram.org.
 ```
 redis-cli rpop telebotpush:$WEBHOOK_SECRET:in | jq '.message .from .username'
@@ -33,6 +39,32 @@ Note that your bot would reply to chat commands directly using https://api.teleg
 
 where the `TOKEN` for your bot is provided by @BotFather when you use the commands `/newbot` or `/token`
 
+For example:
+
+```javascript
+async function sendTelegram(chatId, format, ...content) {
+    logger.debug('sendTelegram', chatId, format, content);
+    try {
+        const text = lodash.trim(lodash.flatten(content).join(' '));
+        assert(chatId, 'chatId');
+        let uri = `sendMessage?chat_id=${chatId}`;
+        uri += '&disable_notification=true';
+        if (format === 'markdown') {
+            uri += `&parse_mode=Markdown`;
+        } else if (format === 'html') {
+            uri += `&parse_mode=HTML`;
+        }
+        uri += `&text=${encodeURIComponent(text)}`;
+        const url = `https://api.telegram.org/bot${config.token}/${uri}`;
+        const res = await fetch(url);
+        if (res.status !== 200) {
+            logger.warn('sendTelegram', chatId, url);
+        }
+    } catch (err) {
+        logger.error('sendTelegram', err);
+    }
+}
+```
 
 ### Related 
 
